@@ -3,11 +3,11 @@ from astropy.time import Time, TimeDelta
 from tools import utils
 
 class OrbitalElements:
-    def __init__(self, SMA=None, eccentricity=0, inclination=0, lAn=0, tAn=0, primBody=None, aPe = 0, epoch=Time('2000-01-01'),
+    def __init__(self, a=None, e=0, i=0, lAn=0, tAn=0, primBody=None, aPe = 0, epoch=Time('2000-01-01'),
                 name=None):
-        self._a = SMA #[0-inf] km
-        self._e = eccentricity #[0-1]
-        self._i = inclination
+        self._a = a #[0-inf] km
+        self._e = e #[0-1]
+        self._i = i
         self._lAn = lAn
         self._aPe = aPe #[0-359] deg
         self._tAn = tAn #000
@@ -118,32 +118,32 @@ class OrbitalElements:
             aPe  - {}
             tAn  - {}
 
-            epoch - {}""".format(self.id, self.primBody, self.a, self.e, self.i, self.lAn, self.aPe, self.tAn, self.epoch)
+            epoch - {}""".format(self.id, self.primBody.name, self.a, self.e, self.i, self.lAn, self.aPe, self.tAn, self.epoch)
 
 class Orbit(OrbitalElements):
-    def __init__(self,  SMA = None, eccentricity=0, inclination=0, lAn=0, tAn=0, primBody=None, aPe = 0, epoch=Time('2000-01-01'),
+    def __init__(self,  a = None, e=0, i=0, lAn=0, tAn=0, primBody=None, aPe = 0, epoch=Time('2000-01-01'),
                 name=None):
-        OrbitalElements.__init__(self,  SMA, eccentricity, inclination, lAn, tAn, primBody, aPe, epoch,
+        OrbitalElements.__init__(self,  a, e, i, lAn, tAn, primBody, aPe, epoch,
                     name)
     @classmethod
-    def fromElements(cls, semiMajorAxis=None, eccentricity = 0, inclination=0,
-                    lAn=0, primBody = None, argumentPeriapsis = 0,
-                    trueAnomaly = 0, refEpoch=Time('2000-01-01'), name=None):
+    def fromElements(cls, a=None, e = 0, i=0,
+                    lAn=0, primBody = None, aPe = 0,
+                    tAn = 0, refEpoch=Time('2000-01-01'), name=None):
         """
         fromElements is callable from the class itself in order to create an
         orbit from the classical Keplerian elements.
         """
 
-        if semiMajorAxis==None:
+        if a==None:
             raise ValueError("Semi-Major Axis required !")
 
         if name == None:
             raise ValueError("The orbit needs a name !")
 
-        return cls(SMA=semiMajorAxis, eccentricity=eccentricity, inclination=inclination, primBody=primBody, aPe=argumentPeriapsis, tAn=trueAnomaly, lAn=lAn, epoch=refEpoch, name=name)
+        return cls(a=a, e=e, i=i, primBody=primBody, aPe=aPe, tAn=tAn, lAn=lAn, epoch=refEpoch, name=name)
 
     @classmethod
-    def fromApsis(cls, periapsis, apoapsis, inclination=0, lAn=0,
+    def fromApsis(cls, periapsis, apoapsis, i=0, lAn=0,
                     primBody = None, argumentPeriapsis = 0, trueAnomaly = 0, refEpoch=Time('2000-01-01'),
                     name=None):
         """
@@ -153,10 +153,10 @@ class Orbit(OrbitalElements):
         if name == None:
             raise ValueError("The orbit needs a name !")
 
-        SMA = (periapsis+apoapsis)/2
-        eccentricity = (apoapsis-periapsis)/(apoapsis+periapsis)
+        a = (periapsis+apoapsis)/2
+        e = (apoapsis-periapsis)/(apoapsis+periapsis)
 
-        return cls(SMA=SMA, eccentricity=eccentricity, inclination=inclination, primBody=primBody, aPe=argumentPeriapsis, tAn=trueAnomaly, lAn=lAn, epoch=refEpoch, name=name)
+        return cls(a=a, e=e, i=i, primBody=primBody, aPe=aPe, tAn=tAn, lAn=lAn, epoch=refEpoch, name=name)
 
     @classmethod
     def fromStateVector(cls, r1, v1, primBody = None, refEpoch=Time('2000-01-01'),
@@ -190,8 +190,8 @@ class Orbit(OrbitalElements):
         e = 1/mu*((v**2-mu/r)*r1-r*vr*v1)
         eMag = np.linalg.norm(e)
 
-        if 0 > eMag >= 1:
-            raise ValueError("e = "+str(e)+", not an ellipse")
+        if eMag < 0 or eMag >= 1:
+            raise ValueError("e = "+str(eMag)+", not an ellipse")
 
         aPe = np.arccos(np.dot(N/NMag, e/eMag))
         if e[2] < 0 :
@@ -202,7 +202,7 @@ class Orbit(OrbitalElements):
             tAn = 2*np.pi-tAn
 
         SMA = -(mu/(2*(v**2/2 - mu/r)))
-        return cls(SMA=SMA, eccentricity=eMag, inclination=i, primBody=primBody, aPe=aPe, tAn=tAn, lAn=lAn, epoch=refEpoch, name=name)
+        return cls(a=SMA, e=eMag, i=i, primBody=primBody, aPe=aPe, tAn=tAn, lAn=lAn, epoch=refEpoch, name=name)
 
     @classmethod
     def fromLambert(cls,r1,r2,t, DM=None, nRev=0, primBody = None, refEpoch=Time('2000-01-01'),name=None):
