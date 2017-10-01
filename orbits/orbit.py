@@ -105,6 +105,21 @@ class OrbitalElements:
             raise TypeError("Name provided is not a string")
         self._id = value
 
+
+    def __str__(self):
+        return """
+            ID       - {}
+            primBody - {}
+
+            a    - {}
+            e    - {}
+            i    - {}
+            lAn  - {}
+            aPe  - {}
+            tAn  - {}
+
+            epoch - {}""".format(self.id, self.primBody, self.a, self.e, self.i, self.lAn, self.aPe, self.tAn, self.epoch)
+
 class Orbit(OrbitalElements):
     def __init__(self,  SMA = None, eccentricity=0, inclination=0, lAn=0, tAn=0, primBody=None, aPe = 0, epoch=Time('2000-01-01'),
                 name=None):
