@@ -78,30 +78,6 @@ def trueToMean(tAn, ecc):
     linEcc = 2*np.arctan(np.sqrt((1-ecc)/(1+ecc))*np.tan(tAn/2))
     return (linEcc-ecc*np.sin(linEcc))%(2*np.pi)
 
-def S(x):
-    """
-    Stumpff S-function
-    """
-    if x < 0:
-        y = (np.sinh(np.sqrt(-x))-np.sqrt(-x))/(np.sqrt(-x)**3)
-    if x > 0:
-        y = (np.sqrt(x)-np.sin(np.sqrt(x)))/(np.sqrt(x)**3)
-    else:
-        y = 1/6
-    return y
-
-def C(x):
-    """
-    Stumpff C-function
-    """
-    if x<0:
-        y = (np.cosh(np.sqrt(-x))-1)/(-x)
-    if x>0:
-        y = (1-np.cos(np.sqrt(x)))/x
-    else:
-        y = 1/2
-    return y
-
 #TODO: Create fuzzy testing for lambert problem
 def uLambert(r1,r2,dt0, primBody, nRev=0, DM=None):
     """
@@ -230,9 +206,6 @@ def uLambert(r1,r2,dt0, primBody, nRev=0, DM=None):
     v2 = (gDot*r2 - r1)/g
 
     return r1,v1,r2,v2
-
-# def multiRevLambert(r1, r2, dt0, primBody, nRev=0, DM=None):
-
 
 if __name__ == "__main__":
     from examples import Earth, Sun
