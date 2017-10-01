@@ -2,13 +2,13 @@ import numpy as np
 from orbits.orbit import Orbit
 from tools.utils import uLambert
 
-#FIXME: Seems to return low values 
+#FIXME: Seems to return low values
 def getC3(body, r2, tof):
     """
     Determines depart energy needed between a body and a destination
     INPUT :
         body    : The primary body we're departing from
-        r2      : The destination (x,y,z) list
+        r2      : The destination (x,y,z) tuple
         tof     : The time of flight in seconds
 
     OUTPUT :
@@ -25,25 +25,6 @@ def getC3(body, r2, tof):
         return np.nan
     return (vE-v1)**2
 
-#
-# def getDepartEnergy(body1, body2, tof):
-#     if body1.primBody != body2.primBody:
-#         raise ValueError("The two bodies need the same primary body !")
-#
-#     body2.Orbit.updTime(tof)
-#
-#     v1 = body1.Orbit.getSpeed()
-#     try:
-#         r1 = np.array(body1.Orbit.cartesianCoordinates())
-#         r2 = np.array(body2.Orbit.cartesianCoordinates())
-#         _,vTransfer,_,_ = uLambert(r1, r2, tof, body1.primBody)
-#         vTransfer = np.linalg.norm(vTransfer)
-#     except:
-#         body2.Orbit.updTime(-tof)
-#         return np.nan
-#
-#     body2.Orbit.updTime(-tof)
-#     return (vTransfer-v1)**2
 
 def getPorkChop(body1, body2, departInterval, arrivalInterval, ITER):
     depArray, stepD = np.linspace(departInterval[0], departInterval[1], num = ITER, retstep=True)
